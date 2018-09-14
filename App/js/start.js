@@ -1,5 +1,5 @@
 // Global Params
-var g_appName = 'ReloadJS';
+var g_appName = 'KachasiJS';
 var g_appCreator = 'Elia Reutlinger';
 var g_navLinks = [
     {title:'Main', view:'main'},

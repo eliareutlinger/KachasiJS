@@ -1,2 +1,6 @@
 $('#genTitle').html(g_appName + " | " + v_viewTitle);
-$('head').append($('placeholder').html());
+if($('#genTitle')){
+
+} else {
+    $('head').append($('placeholder').html());
+}

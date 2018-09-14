@@ -73,7 +73,11 @@ function fetchData(urls, callback, i) {
               callback([urls[i], correctDir]);
           },
           error: function(){
-              fetchData(urls, callback, i+1);
+              if(i+1<urls.length){
+                  fetchData(urls, callback, i+1);
+              } else {
+                  e_error('e.0001.e', 'Provided URLs not found ('+urls[i]+'...).');
+              }
           }
     });
 
@@ -124,12 +128,16 @@ function e_install(type, dataArray){
 
         var buildView = "";
         var i = 0;
+        //$('body').html('<body id="page-top">');
         for(i=0;i<currentGuiObjects.length;i++){
-            console.log(currentGuiObjects[i]['name']);
-            buildView += '<div id="e_view_'+currentGuiObjects[i]['id']+'" component="'+currentGuiObjects[i]['name']+'">'+currentGuiObjects[i]['content']+'</div>';
+            if($('#e_view_'+currentGuiObjects[i]['id']).length){
+                $('#e_view_'+currentGuiObjects[i]['id']).attr('component',currentGuiObjects[i]['name']).html(currentGuiObjects[i]['content']);
+            } else {
+                $('body').append('<div id="e_view_'+currentGuiObjects[i]['id']+'" component="'+currentGuiObjects[i]['name']+'">'+currentGuiObjects[i]['content']+'</div>');
+            }
         }
 
-        $('body').html('<body id="page-top">' + buildView + '</body>');
+        //$('body').append('</body>');
 
     }
 }
@@ -151,14 +159,14 @@ function e_load_view(view, callback){
     });
 }
 
-function e_load_components(componentList, set, callback){
+function e_load_components(componentList, callback){
 
     var contents = [];
     var countComponents = 1;
 
     for (var i = 0; i < componentList.length; i++){
 
-        e_load_component(componentList[i], i, set, function(data){
+        e_load_component(componentList[i][1], i, componentList[i][0], function(data){
             if (typeof data != "undefined") {
 
                 contents.push(data);
@@ -194,16 +202,14 @@ function e_load_component(component, newPos, set, callback){
     ];
 
     var currentObj = currentGuiObjects.find(function(obj){
-        if(obj['name'] == component){
+        if(obj['name'] == name){
             return obj;
         } else {
             return false;
         }
      });
     if(currentObj){
-
         callback({'id':newPos, 'name':currentObj['name'], 'content':currentObj['content']});
-
     } else {
         e_load(checkPaths, function(data){
             callback({'id':newPos, 'name':name, 'content':data});
@@ -213,8 +219,7 @@ function e_load_component(component, newPos, set, callback){
 
 function e_load(checkPaths, callback){
 
-    var content = '';
-    fetchData(checkPaths, function(array) {
+    fetchData(checkPaths, function(array,opt) {
         if(array[0]){
             if(array[0].endsWith('.js')){
                 content = '<script type="text/javascript">' +array[1]+ '</script>';
@@ -222,11 +227,7 @@ function e_load(checkPaths, callback){
                 content = array[1];
             }
             callback(content);
-        } else {
-            e_error('e.0001.e', content + checkPaths);
-            return;
         }
-
     });
 
 }
