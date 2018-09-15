@@ -10,5 +10,7 @@
 </placeholder>
 
 <script type="text/javascript">
-    $.getScript('#COMPDIR#/js/generate.js');
+    e_load_once('#COMPDIR#', function(){
+        $.getScript('#COMPDIR#/js/generate.js');
+    });
 </script>

@@ -106,13 +106,10 @@ function e_install(type, dataArray){
 
             if(currentGuiObjects[i] != null && currentGuiObjects[i]['name'] != 0 && i<newGuiObjects.length){
 
-                if(currentGuiObjects[i]['name'] != newGuiObjects[i]['name']){
-                    currentGuiObjects[i]['name'] = newGuiObjects[i]['name'];
-                    currentGuiObjects[i]['content'] = newGuiObjects[i]['content'];
-                }
+                currentGuiObjects[i]['name'] = newGuiObjects[i]['name'];
+                currentGuiObjects[i]['content'] = newGuiObjects[i]['content'];
 
             } else {
-
 
                 if(i >= newGuiObjects.length){
                     currentGuiObjects.splice(i, 1);
@@ -139,6 +136,14 @@ function e_install(type, dataArray){
 
         //$('body').append('</body>');
 
+    }
+}
+
+var loaded_scripts = [];
+function e_load_once(keyParam, callback){
+    if(!loaded_scripts.includes(keyParam)){
+        loaded_scripts.push(keyParam);
+        callback();
     }
 }
 
@@ -170,7 +175,6 @@ function e_load_components(componentList, callback){
             if (typeof data != "undefined") {
 
                 contents.push(data);
-
                 if(countComponents >= componentList.length){
                     if (typeof callback === 'function') {
                         callback('components',contents);
@@ -180,7 +184,6 @@ function e_load_components(componentList, callback){
                         return contents;
                     }
                 }
-
                 countComponents++;
 
             }
@@ -208,8 +211,10 @@ function e_load_component(component, newPos, set, callback){
             return false;
         }
      });
+
     if(currentObj){
-        callback({'id':newPos, 'name':currentObj['name'], 'content':currentObj['content']});
+        var content = $('#e_view_'+currentObj['id']).html();
+        callback({'id':newPos, 'name':currentObj['name'], 'content':content});
     } else {
         e_load(checkPaths, function(data){
             callback({'id':newPos, 'name':name, 'content':data});
