@@ -1,4 +1,5 @@
-var v_viewTitle = "Features";
+var v_title = "Features";
+var v_subtitle = "";
 
 e_load_components(
     [

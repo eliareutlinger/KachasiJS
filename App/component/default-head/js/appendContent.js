@@ -1,0 +1,1 @@
+$('head').append($('placeholder').html());
