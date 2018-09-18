@@ -100,7 +100,6 @@ function e_install(type, dataArray){
 
     } else  if(type == 'components'){
 
-        var i = 0;
         var newGuiObjects = dataArray.sort(function(a, b){
             a = a['id'];
             b = b['id'];
@@ -108,6 +107,13 @@ function e_install(type, dataArray){
             if(a > b) return 1;
             return 0;
         });
+
+        var i = 0;
+        var componentDivs = currentGuiObjects.length;
+
+        if(newGuiObjects.length > currentGuiObjects.length){
+            componentDivs = newGuiObjects.length;
+        }
 
         while(i<currentGuiObjects.length || i<newGuiObjects.length){
 
@@ -126,22 +132,20 @@ function e_install(type, dataArray){
                 }
 
             }
-
             i++;
         }
 
-        var buildView = "";
-        var i = 0;
-        //$('body').html('<body id="page-top">');
-        for(i=0;i<currentGuiObjects.length;i++){
-            if($('#e_view_'+currentGuiObjects[i]['id']).length){
-                $('#e_view_'+currentGuiObjects[i]['id']).attr('component',currentGuiObjects[i]['name']).html(currentGuiObjects[i]['content']);
+        for(var i=0;i<componentDivs;i++){
+            if(currentGuiObjects[i]){
+                if($('#e_view_'+currentGuiObjects[i]['id']).length){
+                    $('#e_view_'+currentGuiObjects[i]['id']).attr('component',currentGuiObjects[i]['name']).html(currentGuiObjects[i]['content']);
+                } else {
+                    $('body').append('<div id="e_view_'+currentGuiObjects[i]['id']+'" component="'+currentGuiObjects[i]['name']+'">'+currentGuiObjects[i]['content']+'</div>');
+                }
             } else {
-                $('body').append('<div id="e_view_'+currentGuiObjects[i]['id']+'" component="'+currentGuiObjects[i]['name']+'">'+currentGuiObjects[i]['content']+'</div>');
+                $('#e_view_'+i).remove();
             }
         }
-
-        //$('body').append('</body>');
 
     }
 }
