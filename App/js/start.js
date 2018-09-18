@@ -9,8 +9,8 @@ var g_navLinks = [
 ];
 
 // Individual startup
-if(postParams['p']){
-    e_load_view(postParams['p']);
+if(postParams){
+    e_load_view(postParams[0]);
 } else {
     e_load_view('main');
 }

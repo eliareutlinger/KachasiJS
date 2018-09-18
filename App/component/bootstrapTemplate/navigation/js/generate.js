@@ -5,4 +5,4 @@ for(var i=0; i<g_navLinks.length;i++){
     $('.navbar-nav').append(navItem[i]);
     navItem[i].delay((200-((i+1)*1*40/1))).fadeIn('slow');
 }
-$('.navbar-brand').html(g_appName);
+$('.navbar-brand').html(g_appName).fadeIn('slow');

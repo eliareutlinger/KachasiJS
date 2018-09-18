@@ -5,8 +5,12 @@ var postParams = [];
 
 $(window).on('popstate',function(event) {
 
-    var href = window.history.state["info"];
-    e_load_view(href);
+    if(window.history.state != null){
+        if(window.history.state["info"] != './.'){
+            var href = window.history.state["info"];
+            e_load_view(href);
+        }
+    }
 
 });
 
@@ -40,18 +44,19 @@ function e_use_style(url){
 }
 
 function getUrlParams(paramString) {
-    if(paramString.charAt(0) == '?'){paramString = paramString.substr(1);}
-    var paramList = paramString.split("&");
-    var paramArray = [];
-    for (var i = 0; i < paramList.length; i++) {
-        var key = (paramList[i].split("="))[0];
-        var value = (paramList[i].split("="))[1];
-        paramArray[key] = value;
+    if(paramString.includes("#/")){
+        paramString = paramString.split("#/").pop();
+        var paramList = paramString.split("/");
+        var paramArray = [];
+        for (var i = 0; i < paramList.length; i++) {
+            paramArray.push(paramList[i])
+        }
+        console.log(paramArray);
+        return paramArray;
     }
-    return paramArray;
 }
 
-postParams = getUrlParams(window.location.search);
+postParams = getUrlParams(window.location.href);
 
 window.history.pushState({info: './.'}, '../.', './.');
 
@@ -89,7 +94,10 @@ function e_install(type, dataArray){
 
         $('body').append(dataArray['content']);
         var href = dataArray['name'];
-        window.history.pushState({info: href}, href, "?p="+href);
+
+        if(window.history.state["info"] != href){
+            window.history.pushState({info: href}, href, "#/"+href);
+        }
 
     } else  if(type == 'components'){
 
