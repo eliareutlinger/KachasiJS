@@ -51,7 +51,6 @@ function getUrlParams(paramString) {
         for (var i = 0; i < paramList.length; i++) {
             paramArray.push(paramList[i])
         }
-        console.log(paramArray);
         return paramArray;
     }
 }
