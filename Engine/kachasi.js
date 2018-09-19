@@ -207,22 +207,11 @@ kjs.get_components = function(componentList, callback){
 }
 
 kjs.get_component = function(component, newPos, set, callback){
-    var name = component;
-    var path = component + '/' + component;
-    if(typeof set === 'string' && set.length){
-        path = set + '/' + path;
-        name = set + '.' + component;
-    };
-    var checkPaths = [
-        'app/component/'+path+'.html',
-        'app/component/'+path+'.min.js',
-        'app/component/'+path+'.js'
-    ];
 
     var found = false;
     if(kjs.exists(kjs.guiObjects)){
         kjs.guiObjects.filter(function(obj){
-            if(obj['name'] == name){
+            if(obj['name'] == component){
                 callback({'id':newPos, 'name':obj['name'], 'content':$('#e_view_'+obj['id']).html()});
                 return found = true;
             }
@@ -230,8 +219,18 @@ kjs.get_component = function(component, newPos, set, callback){
     };
 
     if(!found){
+        var path = component + '/' + component;
+        if(kjs.exists(set)){
+            path = set + '/' + path;
+            component = set + '.' + component;
+        }
+        var checkPaths = [
+            'app/component/'+path+'.html',
+            'app/component/'+path+'.min.js',
+            'app/component/'+path+'.js'
+        ];
         kjs.get_file(checkPaths, function(data){
-            callback({'id':newPos, 'name':name, 'content':data});
+            callback({'id':newPos, 'name':component, 'content':data});
         });
     }
 }
