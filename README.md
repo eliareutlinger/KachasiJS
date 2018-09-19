@@ -7,9 +7,10 @@ Use per RawGit CDN:
 ```
 
 ## Default Setup
-Everything needed to run KachasiJS is a simple **Apache-Server** (for `window` functions).
+Everything needed to run KachasiJS is a simple **Apache-Server** (for `window` functions) like it comes with XAMPP.
 
-You can use the Template provided with this repo or create your own basic structure:
+You can use the [Template](https://github.com/eliareutlinger/KachasiJS/tree/master/Template) provided with this Repo or create your own basic structure. Make sure you have all Paths set up like listed below. KachasiJS works by using 
+
 
 ### Basic Directory Structure
 
