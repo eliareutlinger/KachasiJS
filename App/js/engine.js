@@ -44,7 +44,7 @@ function e_use_style(url){
 }
 
 function getUrlParams(paramString) {
-    if(paramString.includes("#/")){
+    if(paramString.indexOf("#/") > 0){
         paramString = paramString.split("#/").pop();
         var paramList = paramString.split("/");
         var paramArray = [];
@@ -152,7 +152,7 @@ function e_install(type, dataArray){
 
 var loaded_scripts = [];
 function e_load_once(keyParam, callback){
-    if(!loaded_scripts.includes(keyParam)){
+    if(loaded_scripts.indexOf(keyParam, this.length - keyParam.length) == -1){
         loaded_scripts.push(keyParam);
         callback();
     }
@@ -215,13 +215,15 @@ function e_load_component(component, newPos, set, callback){
         'app/component/'+path+'.js'
     ];
 
-    var currentObj = currentGuiObjects.find(function(obj){
-        if(obj['name'] == name){
-            return obj;
-        } else {
-            return false;
-        }
-     });
+
+    var currentObj;
+    if(currentGuiObjects.length >= 1){
+        currentGuiObjects.filter(function(obj){
+            if(obj['name'] == name){
+                currentObj = obj;
+            }
+         });
+    };
 
     if(currentObj){
         var content = $('#e_view_'+currentObj['id']).html();
@@ -237,7 +239,7 @@ function e_load(checkPaths, callback){
 
     fetchData(checkPaths, function(array,opt) {
         if(array[0]){
-            if(array[0].endsWith('.js')){
+            if(array[0].indexOf('.js', this.length - '.js'.length) !== -1){
                 content = '<script type="text/javascript">' +array[1]+ '</script>';
             } else {
                 content = array[1];
