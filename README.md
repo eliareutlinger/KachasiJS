@@ -2,8 +2,9 @@
 Framework made in Vanilla JS (plain old JavaScript) and JQuery. Works with views and components while being extremly lightweight.
 
 Use per RawGit CDN:
-
-`<script type="text/javascript" src="https://cdn.rawgit.com/eliareutlinger/KachasiJS/master/Engine/engine.min.js"></script>`
+```html
+<script type="text/javascript" src="https://cdn.rawgit.com/eliareutlinger/KachasiJS/master/Engine/engine.min.js"></script>
+```
 
 ## Default Setup
 Everything needed to run KachasiJS is a simple **Apache-Server** (for `window` functions).
