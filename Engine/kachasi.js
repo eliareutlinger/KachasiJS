@@ -14,11 +14,11 @@ $(window).on('popstate',function() {
 });
 
 kjs.error = function(code, additional){
-    console.log('Error: '+code+' - '+additional);
+    //TODO console.log('Error: '+code+' - '+additional);
 }
 
 kjs.set_style = function(url){
-    var params = {};
+    var params;
     if(url == 'bootstrap'){
         params = {
             rel: 'stylesheet',
@@ -54,7 +54,7 @@ kjs.get_url_params = function(paramString) {
         return paramArray;
     }
     window.history.pushState({info: './.'}, '../.', './.');
-    return;
+    return undefined;
 }
 
 kjs.replace_all = function(str, find, replace) {
@@ -183,10 +183,10 @@ kjs.get_view = function(view, callback){
     kjs.get_file(checkPaths, function(data){
         if (typeof callback === 'function') {
             callback('view',{'name':view, 'content':data});
-            return;
+            return undefined;
         } else if (callback !== false){
             kjs.install('view',{'name':view, 'content':data});
-            return;
+            return undefined;
         }
         return data;
     });
@@ -206,10 +206,10 @@ kjs.get_components = function(componentList, callback){
             if(countComponents >= componentList.length){
                 if (typeof callback === 'function') {
                     callback('components',contents);
-                    return;
+                    return undefined;
                 } else if (callback !== false){
                     kjs.install('components',contents);
-                    return;
+                    return undefined;
                 } else {
                     return contents;
                 }
