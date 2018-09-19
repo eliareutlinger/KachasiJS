@@ -241,7 +241,6 @@ function e_load_component(component, newPos, set, callback){
 }
 
 function e_load(checkPaths, callback){
-
     fetchData(checkPaths, function(array,opt) {
         if(array[0]){
             if(array[0].indexOf('.js', this.length - '.js'.length) !== -1){
@@ -252,6 +251,10 @@ function e_load(checkPaths, callback){
             callback(content);
         }
     });
-
 }
-$.getScript("app/start.js");
+
+$.getScript('app/start.min.js').fail(function(){
+    $.getScript('app/start.js').fail(function(){
+        e_error('e.0002.e', arguments[2].toString());
+    });
+});
