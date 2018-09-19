@@ -97,18 +97,53 @@ kjs.exists = function(object){
     return false;
 }
 
+kjs.install_components = function(newGuiObjects){
+
+    var componentDivs = 0;
+    if(kjs.exists(kjs.guiObjects)){
+        if(newGuiObjects.length > kjs.guiObjects.length){
+            componentDivs = newGuiObjects.length;
+        } else if(newGuiObjects.length < kjs.guiObjects.length){
+            componentDivs = kjs.guiObjects.length;
+        } else if(newGuiObjects.length == kjs.guiObjects.length){
+            componentDivs = kjs.guiObjects.length;
+        }
+    } else {
+        kjs.guiObjects = [];
+        componentDivs = newGuiObjects.length;
+    }
+
+    for(var i = 0;i<componentDivs;i++){
+        if(kjs.guiObjects[i] !== undefined && kjs.guiObjects[i]['name'] !== 0 && i<newGuiObjects.length){
+            kjs.guiObjects[i]['name'] = newGuiObjects[i]['name'];
+            kjs.guiObjects[i]['content'] = newGuiObjects[i]['content'];
+            if($('#e_view_'+kjs.guiObjects[i]['id']).length){
+                $('#e_view_'+kjs.guiObjects[i]['id']).attr('component',kjs.guiObjects[i]['name']).html(kjs.guiObjects[i]['content']);
+            } else {
+                $('body').append('<div id="e_view_'+kjs.guiObjects[i]['id']+'" component="'+kjs.guiObjects[i]['name']+'">'+kjs.guiObjects[i]['content']+'</div>');
+            }
+        } else {
+            if(i >= newGuiObjects.length){
+                kjs.guiObjects.splice(i, 1);
+                $('#e_view_'+i).remove();
+            } else {
+                kjs.guiObjects.push(newGuiObjects[i]);
+                $('body').append('<div id="e_view_'+kjs.guiObjects[i]['id']+'" component="'+kjs.guiObjects[i]['name']+'">'+kjs.guiObjects[i]['content']+'</div>');
+            }
+        }
+    }
+
+}
+
 kjs.install = function(type, dataArray){
 
     if(type == 'view'){
-
-        $('body').append(dataArray['content']);
         var href = dataArray['name'];
-
+        $('body').append(dataArray['content']);
         if(!kjs.exists(window.history.state['info']) || window.history.state['info'] != href){
             window.history.pushState({info: href}, href, "#/"+href);
         }
-
-    } else  if(type == 'components'){
+    } else if(type == 'components'){
 
         var newGuiObjects = dataArray.sort(function(a, b){
             a = a['id'];
@@ -118,48 +153,7 @@ kjs.install = function(type, dataArray){
             return 0;
         });
 
-        var componentDivs = 0;
-        if(kjs.exists(kjs.guiObjects)){
-            if(newGuiObjects.length > kjs.guiObjects.length){
-                componentDivs = newGuiObjects.length;
-            } else if(newGuiObjects.length < kjs.guiObjects.length){
-                componentDivs = kjs.guiObjects.length;
-            } else if(newGuiObjects.length == kjs.guiObjects.length){
-                componentDivs = kjs.guiObjects.length;
-            }
-        } else {
-            kjs.guiObjects = [];
-            componentDivs = newGuiObjects.length;
-        }
-
-        var i = 0;
-        while(i<componentDivs){
-            if(kjs.guiObjects[i] !== undefined && kjs.guiObjects[i]['name'] !== 0 && i<newGuiObjects.length){
-                kjs.guiObjects[i]['name'] = newGuiObjects[i]['name'];
-                kjs.guiObjects[i]['content'] = newGuiObjects[i]['content'];
-            } else {
-                if(i >= newGuiObjects.length){
-                    kjs.guiObjects.splice(i, 1);
-                } else {
-                    kjs.guiObjects.push(newGuiObjects[i]);
-                }
-            }
-
-            i++;
-
-        }
-
-        for(i=0;i<componentDivs;i++){
-            if(kjs.guiObjects[i]){
-                if($('#e_view_'+kjs.guiObjects[i]['id']).length){
-                    $('#e_view_'+kjs.guiObjects[i]['id']).attr('component',kjs.guiObjects[i]['name']).html(kjs.guiObjects[i]['content']);
-                } else {
-                    $('body').append('<div id="e_view_'+kjs.guiObjects[i]['id']+'" component="'+kjs.guiObjects[i]['name']+'">'+kjs.guiObjects[i]['content']+'</div>');
-                }
-            } else {
-                $('#e_view_'+i).remove();
-            }
-        }
+        kjs.install_components(newGuiObjects);
 
     }
 }
