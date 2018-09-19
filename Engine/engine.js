@@ -18,7 +18,7 @@ function e_error(code, additional){
     alert('Error: '+code+' - '+additional);
 }
 
-function e_use_style(url){
+function e_set_style(url){
     if(url == 'bootstrap'){
         var params = {
             rel: 'stylesheet',
@@ -63,8 +63,14 @@ function replaceAll(str, find, replace) {
     return str.replace(new RegExp(find, 'g'), replace);
 }
 
-function fetchData(urls, callback, i) {
+function e_set_compdir(data, path){
+    if(path.slice(-1) == "/" || path.slice(-1) == "\\"){
+        path = path.slice(0, -1);
+    }
+    return replaceAll(data, '#COMPDIR#', path);
+}
 
+function fetchData(urls, callback, i) {
     if(!i){var i = 0};
     $.ajax({
           url: urls[i],
@@ -73,7 +79,7 @@ function fetchData(urls, callback, i) {
               var compdir = (urls[i].split('/'));
               compdir.pop();
               compdir = compdir.join('/');
-              correctDir = replaceAll(data, '#COMPDIR#', compdir);
+              correctDir = e_set_compdir(data, compdir);
               callback([urls[i], correctDir]);
           },
           error: function(){
@@ -84,7 +90,6 @@ function fetchData(urls, callback, i) {
               }
           }
     });
-
 }
 
 function e_install(type, dataArray){
@@ -205,7 +210,7 @@ function e_load_components(componentList, callback){
 function e_load_component(component, newPos, set, callback){
     var name = component;
     var path = component + '/' + component;
-    if(typeof set === 'string'){
+    if(typeof set === 'string' && set.length){
         path = set + '/' + path;
         var name = set + '.' + component;
     };
@@ -249,4 +254,4 @@ function e_load(checkPaths, callback){
     });
 
 }
-$.getScript("app/js/start.js");
+$.getScript("app/start.js");

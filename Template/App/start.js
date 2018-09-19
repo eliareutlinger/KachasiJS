@@ -16,5 +16,5 @@ if(postParams){
 }
 
 //Stylesheets
-e_use_style('bootstrap');
-e_use_style('fontawesome');
+e_set_style('bootstrap');
+e_set_style('fontawesome');
