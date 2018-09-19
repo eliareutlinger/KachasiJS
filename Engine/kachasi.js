@@ -91,7 +91,7 @@ kjs.locate_file = function(urls, callback, i) {
 }
 
 kjs.exists = function(object){
-    if(typeof object !== 'undefined' && object != null && object.length > 0){
+    if(typeof object !== 'undefined' && object !== null && object.length > 0){
         return true;
     }
     return false;
@@ -105,7 +105,7 @@ kjs.install_components = function(newGuiObjects){
             componentDivs = newGuiObjects.length;
         } else if(newGuiObjects.length < kjs.guiObjects.length){
             componentDivs = kjs.guiObjects.length;
-        } else if(newGuiObjects.length == kjs.guiObjects.length){
+        } else {
             componentDivs = kjs.guiObjects.length;
         }
     } else {
@@ -114,22 +114,15 @@ kjs.install_components = function(newGuiObjects){
     }
 
     for(var i = 0;i<componentDivs;i++){
-        if(kjs.guiObjects[i] !== undefined && kjs.guiObjects[i]['name'] !== 0 && i<newGuiObjects.length){
-            kjs.guiObjects[i]['name'] = newGuiObjects[i]['name'];
-            kjs.guiObjects[i]['content'] = newGuiObjects[i]['content'];
-            if($('#e_view_'+kjs.guiObjects[i]['id']).length){
-                $('#e_view_'+kjs.guiObjects[i]['id']).attr('component',kjs.guiObjects[i]['name']).html(kjs.guiObjects[i]['content']);
-            } else {
-                $('body').append('<div id="e_view_'+kjs.guiObjects[i]['id']+'" component="'+kjs.guiObjects[i]['name']+'">'+kjs.guiObjects[i]['content']+'</div>');
-            }
+        if(kjs.guiObjects[i] !== undefined && i<newGuiObjects.length){
+            kjs.guiObjects[i] = newGuiObjects[i];
+            $('#e_view_'+kjs.guiObjects[i]['id']).attr('component',kjs.guiObjects[i]['name']).html(kjs.guiObjects[i]['content']);
+        } else if(i>=newGuiObjects.length){
+            kjs.guiObjects.splice(i, 1);
+            $('#e_view_'+i).remove();
         } else {
-            if(i >= newGuiObjects.length){
-                kjs.guiObjects.splice(i, 1);
-                $('#e_view_'+i).remove();
-            } else {
-                kjs.guiObjects.push(newGuiObjects[i]);
-                $('body').append('<div id="e_view_'+kjs.guiObjects[i]['id']+'" component="'+kjs.guiObjects[i]['name']+'">'+kjs.guiObjects[i]['content']+'</div>');
-            }
+            kjs.guiObjects.push(newGuiObjects[i]);
+            $('body').append('<div id="e_view_'+kjs.guiObjects[i]['id']+'" component="'+kjs.guiObjects[i]['name']+'">'+kjs.guiObjects[i]['content']+'</div>');
         }
     }
 
@@ -226,19 +219,17 @@ kjs.get_component = function(component, newPos, set, callback){
         'app/component/'+path+'.js'
     ];
 
-    var currentObj;
+    var found = false;
     if(kjs.exists(kjs.guiObjects)){
         kjs.guiObjects.filter(function(obj){
             if(obj['name'] == name){
-                currentObj = obj;
+                callback({'id':newPos, 'name':obj['name'], 'content':$('#e_view_'+obj['id']).html()});
+                return found = true;
             }
-         });
+        });
     };
 
-    if(currentObj){
-        var content = $('#e_view_'+currentObj['id']).html();
-        callback({'id':newPos, 'name':currentObj['name'], 'content':content});
-    } else {
+    if(!found){
         kjs.get_file(checkPaths, function(data){
             callback({'id':newPos, 'name':name, 'content':data});
         });
