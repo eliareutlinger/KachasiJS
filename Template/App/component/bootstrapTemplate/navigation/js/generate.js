@@ -1,7 +1,7 @@
 var navItem = [];
 for(var i=0; i<g_navLinks.length;i++){
     navItem[i] = $('.nav-item:first').clone();
-    navItem[i].children('a').attr('onclick', 'e_load_view("'+g_navLinks[i]['view']+'")').html(g_navLinks[i]['title']);
+    navItem[i].children('a').attr('onclick', 'kjs.get_view("'+g_navLinks[i]['view']+'")').html(g_navLinks[i]['title']);
     $('.navbar-nav').append(navItem[i]);
     navItem[i].delay((200-((i+1)*1*40/1))).fadeIn('slow');
 }

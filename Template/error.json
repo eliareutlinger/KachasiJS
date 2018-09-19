@@ -1,0 +1,20 @@
+{
+  "catalog": {
+    "error": [
+      {
+        "code": "e.0001.e",
+        "concerns": "Engine",
+        "ending": "e",
+        "message": "The Path used to load a View is incorrect or there is no file at this Path.",
+        "function": ""
+      },
+      {
+        "code": "e.0002.e",
+        "concerns": "Engine",
+        "ending": "e",
+        "message": "There's no start.js nor start.min.js in the App/ directory.",
+        "function": ""
+      }
+    ]
+  }
+}

@@ -1,24 +1,25 @@
-/* global: postParams **/
-/* global: currentGuiObjects **/
-var currentGuiObjects = [];
-var postParams = [];
+/* global: kjs.urlParams **/
+/* global: kjs.guiObjects **/
+function kjs() {
+    this.guiObjects = [];
+    this.urlParams = [];
+    this.cacheKeys = [];
+}
 
 $(window).on('popstate',function(event) {
-
     if(window.history.state != null){
         if(window.history.state["info"] != './.'){
             var href = window.history.state["info"];
-            e_load_view(href);
+            kjs.get_view(href);
         }
     }
-
 });
 
-function e_error(code, additional){
+kjs.error = function(code, additional){
     alert('Error: '+code+' - '+additional);
 }
 
-function e_set_style(url){
+kjs.set_style = function(url){
     if(url == 'bootstrap'){
         var params = {
             rel: 'stylesheet',
@@ -43,7 +44,7 @@ function e_set_style(url){
     $('<link/>', params).appendTo('head');
 }
 
-function getUrlParams(paramString) {
+kjs.get_url_params = function(paramString) {
     if(paramString.indexOf("#/") > 0){
         paramString = paramString.split("#/").pop();
         var paramList = paramString.split("/");
@@ -52,25 +53,23 @@ function getUrlParams(paramString) {
             paramArray.push(paramList[i])
         }
         return paramArray;
+    } else {
+        window.history.pushState({info: './.'}, '../.', './.');
     }
 }
 
-postParams = getUrlParams(window.location.href);
-
-window.history.pushState({info: './.'}, '../.', './.');
-
-function replaceAll(str, find, replace) {
+kjs.replace_all = function(str, find, replace) {
     return str.replace(new RegExp(find, 'g'), replace);
 }
 
-function e_set_compdir(data, path){
+kjs.set_compdir = function(data, path){
     if(path.slice(-1) == "/" || path.slice(-1) == "\\"){
         path = path.slice(0, -1);
     }
-    return replaceAll(data, '#COMPDIR#', path);
+    return kjs.replace_all(data, '#COMPDIR#', path);
 }
 
-function fetchData(urls, callback, i) {
+kjs.locate_file = function(urls, callback, i) {
     if(!i){var i = 0};
     $.ajax({
           url: urls[i],
@@ -79,27 +78,35 @@ function fetchData(urls, callback, i) {
               var compdir = (urls[i].split('/'));
               compdir.pop();
               compdir = compdir.join('/');
-              correctDir = e_set_compdir(data, compdir);
+              correctDir = kjs.set_compdir(data, compdir);
               callback([urls[i], correctDir]);
           },
           error: function(){
               if(i+1<urls.length){
-                  fetchData(urls, callback, i+1);
+                  kjs.locate_file(urls, callback, i+1);
               } else {
-                  e_error('e.0001.e', 'Provided URLs not found ('+urls[i]+'...).');
+                  kjs.error('e.0001.e', 'Provided URLs not found ('+urls[i]+'...).');
               }
           }
     });
 }
 
-function e_install(type, dataArray){
+kjs.exists = function(object){
+    if(typeof object !== 'undefined' && object != null && object.length > 0){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+kjs.install = function(type, dataArray){
 
     if(type == 'view'){
 
         $('body').append(dataArray['content']);
         var href = dataArray['name'];
 
-        if(window.history.state["info"] != href){
+        if(!kjs.exists(window.history.state['info']) || window.history.state['info'] != href){
             window.history.pushState({info: href}, href, "#/"+href);
         }
 
@@ -113,39 +120,44 @@ function e_install(type, dataArray){
             return 0;
         });
 
-        var i = 0;
-        var componentDivs = currentGuiObjects.length;
-
-        if(newGuiObjects.length > currentGuiObjects.length){
+        var componentDivs = 0;
+        if(kjs.exists(kjs.guiObjects)){
+            if(newGuiObjects.length > kjs.guiObjects.length){
+                componentDivs = newGuiObjects.length;
+            } else if(newGuiObjects.length < kjs.guiObjects.length){
+                componentDivs = kjs.guiObjects.length;
+            } else if(newGuiObjects.length == kjs.guiObjects.length){
+                componentDivs = kjs.guiObjects.length;
+            }
+        } else {
+            kjs.guiObjects = [];
             componentDivs = newGuiObjects.length;
         }
 
-        while(i<currentGuiObjects.length || i<newGuiObjects.length){
+        var i = 0;
+        while(i<componentDivs){
 
-            if(currentGuiObjects[i] != null && currentGuiObjects[i]['name'] != 0 && i<newGuiObjects.length){
-
-                currentGuiObjects[i]['name'] = newGuiObjects[i]['name'];
-                currentGuiObjects[i]['content'] = newGuiObjects[i]['content'];
-
+            if(kjs.guiObjects[i] != null && kjs.guiObjects[i]['name'] != 0 && i<newGuiObjects.length){
+                kjs.guiObjects[i]['name'] = newGuiObjects[i]['name'];
+                kjs.guiObjects[i]['content'] = newGuiObjects[i]['content'];
             } else {
-
                 if(i >= newGuiObjects.length){
-                    currentGuiObjects.splice(i, 1);
-                    i -= 1;
+                    kjs.guiObjects.splice(i, 1);
                 } else {
-                    currentGuiObjects.push(newGuiObjects[i]);
+                    kjs.guiObjects.push(newGuiObjects[i]);
                 }
-
             }
+
             i++;
+
         }
 
         for(var i=0;i<componentDivs;i++){
-            if(currentGuiObjects[i]){
-                if($('#e_view_'+currentGuiObjects[i]['id']).length){
-                    $('#e_view_'+currentGuiObjects[i]['id']).attr('component',currentGuiObjects[i]['name']).html(currentGuiObjects[i]['content']);
+            if(kjs.guiObjects[i]){
+                if($('#e_view_'+kjs.guiObjects[i]['id']).length){
+                    $('#e_view_'+kjs.guiObjects[i]['id']).attr('component',kjs.guiObjects[i]['name']).html(kjs.guiObjects[i]['content']);
                 } else {
-                    $('body').append('<div id="e_view_'+currentGuiObjects[i]['id']+'" component="'+currentGuiObjects[i]['name']+'">'+currentGuiObjects[i]['content']+'</div>');
+                    $('body').append('<div id="e_view_'+kjs.guiObjects[i]['id']+'" component="'+kjs.guiObjects[i]['name']+'">'+kjs.guiObjects[i]['content']+'</div>');
                 }
             } else {
                 $('#e_view_'+i).remove();
@@ -155,39 +167,41 @@ function e_install(type, dataArray){
     }
 }
 
-var loaded_scripts = [];
-function e_load_once(keyParam, callback){
-    if(loaded_scripts.indexOf(keyParam, this.length - keyParam.length) == -1){
-        loaded_scripts.push(keyParam);
+kjs.get_once = function(keyParam, callback){
+    if(!kjs.exists(kjs.cacheKeys)){
+        kjs.cacheKeys = [];
+    }
+    if(kjs.cacheKeys.indexOf(keyParam, this.length - keyParam.length) == -1){
+        kjs.cacheKeys.push(keyParam);
         callback();
     }
 }
 
-function e_load_view(view, callback){
+kjs.get_view = function(view, callback){
     var checkPaths = [
         'app/view/'+view+'/'+view+'.min.js',
         'app/view/'+view+'/'+view+'.html',
         'app/view/'+view+'/'+view+'.js',
     ];
-    e_load(checkPaths, function(data){
+    kjs.get_file(checkPaths, function(data){
         if (typeof callback === 'function') {
             callback('view',{'name':view, 'content':data});
         } else if (callback != false){
-            e_install('view',{'name':view, 'content':data});
+            kjs.install('view',{'name':view, 'content':data});
         } else {
             return data;
         }
     });
 }
 
-function e_load_components(componentList, callback){
+kjs.get_components = function(componentList, callback){
 
     var contents = [];
     var countComponents = 1;
 
     for (var i = 0; i < componentList.length; i++){
 
-        e_load_component(componentList[i][1], i, componentList[i][0], function(data){
+        kjs.get_component(componentList[i][1], i, componentList[i][0], function(data){
             if (typeof data != "undefined") {
 
                 contents.push(data);
@@ -195,19 +209,18 @@ function e_load_components(componentList, callback){
                     if (typeof callback === 'function') {
                         callback('components',contents);
                     } else if (callback != false){
-                        e_install('components',contents);
+                        kjs.install('components',contents);
                     } else {
                         return contents;
                     }
                 }
                 countComponents++;
-
             }
         });
     }
 }
 
-function e_load_component(component, newPos, set, callback){
+kjs.get_component = function(component, newPos, set, callback){
     var name = component;
     var path = component + '/' + component;
     if(typeof set === 'string' && set.length){
@@ -220,10 +233,9 @@ function e_load_component(component, newPos, set, callback){
         'app/component/'+path+'.js'
     ];
 
-
     var currentObj;
-    if(currentGuiObjects.length >= 1){
-        currentGuiObjects.filter(function(obj){
+    if(kjs.exists(kjs.guiObjects)){
+        kjs.guiObjects.filter(function(obj){
             if(obj['name'] == name){
                 currentObj = obj;
             }
@@ -234,14 +246,14 @@ function e_load_component(component, newPos, set, callback){
         var content = $('#e_view_'+currentObj['id']).html();
         callback({'id':newPos, 'name':currentObj['name'], 'content':content});
     } else {
-        e_load(checkPaths, function(data){
+        kjs.get_file(checkPaths, function(data){
             callback({'id':newPos, 'name':name, 'content':data});
         });
     }
 }
 
-function e_load(checkPaths, callback){
-    fetchData(checkPaths, function(array,opt) {
+kjs.get_file = function(checkPaths, callback){
+    kjs.locate_file(checkPaths, function(array,opt) {
         if(array[0]){
             if(array[0].indexOf('.js', this.length - '.js'.length) !== -1){
                 content = '<script type="text/javascript">' +array[1]+ '</script>';
@@ -253,8 +265,9 @@ function e_load(checkPaths, callback){
     });
 }
 
+kjs.urlParams = kjs.get_url_params(window.location.href);
 $.getScript('app/start.min.js').fail(function(){
     $.getScript('app/start.js').fail(function(){
-        e_error('e.0002.e', arguments[2].toString());
+        kjs.error('e.0002.e', arguments[2].toString());
     });
 });

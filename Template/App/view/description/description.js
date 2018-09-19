@@ -1,7 +1,7 @@
 var v_title = "Description";
 var v_subtitle = "";
 
-e_load_components(
+kjs.get_components(
     [
         ['','default-head'],
         ['bootstrapTemplate','navigation'],

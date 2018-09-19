@@ -9,12 +9,12 @@ var g_navLinks = [
 ];
 
 // Individual startup
-if(postParams){
-    e_load_view(postParams[0]);
+if(kjs.exists(kjs.urlParams)){
+    kjs.get_view(kjs.urlParams[0]);
 } else {
-    e_load_view('main');
+    kjs.get_view('main');
 }
 
 //Stylesheets
-e_set_style('bootstrap');
-e_set_style('fontawesome');
+kjs.set_style('bootstrap');
+kjs.set_style('fontawesome');
