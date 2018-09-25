@@ -115,15 +115,17 @@ kjs.install_components = function(newGuiObjects){
     }
 
     for(var i = 0;i<componentDivs;i++){
-        if(kjs.guiObjects[i] !== undefined && i<newGuiObjects.length){
-            kjs.guiObjects[i] = newGuiObjects[i];
-            $('#e_view_'+kjs.guiObjects[i]['id']).attr('component',kjs.guiObjects[i]['name']).html(kjs.guiObjects[i]['content']);
+        if(i<newGuiObjects.length){
+            if(kjs.guiObjects[i] !== undefined){
+                kjs.guiObjects[i] = newGuiObjects[i];
+                $('#e_view_'+newGuiObjects[i]['id']).attr('component',newGuiObjects[i]['name']).html(newGuiObjects[i]['content']);
+            } else {
+                kjs.guiObjects[i] = (newGuiObjects[i]);
+                $('body').append('<div id="e_view_'+newGuiObjects[i]['id']+'" component="'+newGuiObjects[i]['name']+'">'+newGuiObjects[i]['content']+'</div>');
+            }
         } else if(i>=newGuiObjects.length){
-            kjs.guiObjects.splice(i, 1);
+            kjs.guiObjects[i] = undefined;
             $('#e_view_'+i).remove();
-        } else {
-            kjs.guiObjects.push(newGuiObjects[i]);
-            $('body').append('<div id="e_view_'+kjs.guiObjects[i]['id']+'" component="'+kjs.guiObjects[i]['name']+'">'+kjs.guiObjects[i]['content']+'</div>');
         }
     }
 
@@ -218,7 +220,7 @@ kjs.get_component = function(component, newPos, set, callback){
 
     if(kjs.exists(kjs.guiObjects)){
         for(var i = 0; i < kjs.guiObjects.length; i++){
-            if(kjs.guiObjects[i]['name'] === component){
+            if(kjs.guiObjects[i] !== undefined && kjs.guiObjects[i]['name'] === component){
                 callback({'id':newPos, 'name':kjs.guiObjects[i]['name'], 'content':$('#e_view_'+kjs.guiObjects[i]['id']).html()});
                 return found = true;
             }
