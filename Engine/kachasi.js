@@ -1,5 +1,6 @@
 /* global: kjs.urlParams **/
 /* global: kjs.guiObjects **/
+/* global: kjs.cacheKeys **/
 function kjs() {
     this.guiObjects = [];
     this.urlParams = [];
@@ -14,7 +15,7 @@ $(window).on('popstate',function() {
 });
 
 kjs.error = function(code, additional){
-    //TODO console.log('Error: '+code+' - '+additional);
+    $('body').append('<div id="e_view_error" style="text-align:center; background-color:#dc3545; padding:20px; color: white;">Error "'+code+'" occured: '+additional+'</div>');
 }
 
 kjs.set_style = function(url){
@@ -209,21 +210,22 @@ kjs.get_components = function(componentList, callback){
 kjs.get_component = function(component, newPos, set, callback){
 
     var found = false;
+    var path = component + '/' + component;
+    if(kjs.exists(set)){
+        path = set + '/' + path;
+        component = set + '.' + component;
+    }
+
     if(kjs.exists(kjs.guiObjects)){
-        kjs.guiObjects.filter(function(obj){
-            if(obj['name'] == component){
-                callback({'id':newPos, 'name':obj['name'], 'content':$('#e_view_'+obj['id']).html()});
+        for(var i = 0; i < kjs.guiObjects.length; i++){
+            if(kjs.guiObjects[i]['name'] === component){
+                callback({'id':newPos, 'name':kjs.guiObjects[i]['name'], 'content':$('#e_view_'+kjs.guiObjects[i]['id']).html()});
                 return found = true;
             }
-        });
+        };
     };
 
     if(!found){
-        var path = component + '/' + component;
-        if(kjs.exists(set)){
-            path = set + '/' + path;
-            component = set + '.' + component;
-        }
         var checkPaths = [
             'app/component/'+path+'.html',
             'app/component/'+path+'.min.js',
@@ -233,6 +235,7 @@ kjs.get_component = function(component, newPos, set, callback){
             callback({'id':newPos, 'name':component, 'content':data});
         });
     }
+
 }
 
 kjs.get_file = function(checkPaths, callback){
