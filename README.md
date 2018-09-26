@@ -1,19 +1,19 @@
 # KachasiJS
-Framework made in Vanilla JS (plain old JavaScript) and JQuery. Works with views and components while being extremly lightweight.
+Framework made in Vanilla JS (plain old JavaScript) and JQuery. Works with views and components while being extremely lightweight.
 
 Use per RawGit CDN:
 ```html
-<script type="text/javascript" src="https://cdn.rawgit.com/eliareutlinger/KachasiJS/master/Engine/engine.min.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/eliareutlinger/KachasiJS/master/Engine/kachasi.min.js"></script>
 ```
 
 ## Default Setup
 Everything needed to run KachasiJS is a simple **Apache-Server** (for `window` functions) like it comes with XAMPP.
 
-You can use the [Template](https://github.com/eliareutlinger/KachasiJS/tree/master/Template) provided with this Repo or create your own basic structure. Make sure you have all Paths set up like listed below. KachasiJS works by using 
+You can use the [Template](https://github.com/eliareutlinger/KachasiJS/tree/master/Template) provided with this Repository or create your own basic structure. Make sure you have all Paths set up like listed below.
 
 
 ### Basic Directory Structure
-
+KachasiJS is based on file paths so you'll have to keep the following structure. I recommend to use minified Scripts only
 ```
 index.html
 App/
@@ -32,7 +32,7 @@ App/
         └── exampleView.min.js
 ```
 
-### Important Files
+## Important Files
 Make sure to have the following files configured correctly, while having them in the same spot as listed above.
 
 #### index.html
@@ -43,7 +43,7 @@ Make sure to have the following files configured correctly, while having them in
 <script type="text/javascript" src="https://cdn.rawgit.com/eliareutlinger/KachasiJS/master/Engine/kachasi.min.js"></script>
 </html>
 ```
-This should be the first file called by a client. It gets all dependencies (JQuery&KachasiJS) from CDNs (default conf).
+This should be the first file called by a client. It gets all dependencies (JQuery&KachasiJS) from their CDN (if you use the default configuration from the [Template](https://github.com/eliareutlinger/KachasiJS/tree/master/Template)).
 
 #### start.js / start.min.js
 ```javascript
@@ -68,7 +68,7 @@ if(kjs.exists(kjs.urlParams)){
 kjs.set_style('bootstrap'); //Loads Bootstrap 4.0 including it's JS-Scripts from cdn.
 kjs.set_style('fontawesome'); //Loads Fontawsome from CDN
 ```
-Here you can configure the settings and default behaviour of your App when starting. So this will be the first Script called after loading all dependencies from `index.html`.
+Here you can configure the settings and default behavior of your App when starting. So this will be the first Script called after loading all dependencies from `index.html`.
 
 #### Views
 A View-Script is used to define view-specific variables and the components used in this view. The minimal setup contains the `kjs.get_components()` function, which tells the engine which components have to be used.
@@ -86,11 +86,35 @@ kjs.get_components([
     ['bootstrapTemplate','footer'],
 ]);
 ```
-The 
 
 ## Framework Variables
-There are a few pre-defined Variables as well as Placeholders to make your development easier.
-(Work in progress)
+There are a few pre-defined global Variables as well as Placeholders to make your development easier. (Work in progress)
+
+###  #COMPDIR#
+This Placeholder can be used in components and views of every type (html, css & js) to get the current directory path. As well as a path it could be used as a unique identifier for every component and view.
+```javascript
+kjs.get_once('#COMPDIR#', function(){ //Used as identifier in get_once()
+	$.getScript('#COMPDIR#/js/generate.js'); //Used as Path
+});
+$.getScript('#COMPDIR#/js/animations.min.js'); //Used as Path
+```
+###  kjs.guiObjects
+This Array contains the currently used components. They are saved as Objects and used when loading a new view. `id` defines the position of the component. `name` contains the components name. If it's loaded from a set, it will be something like `set.component`. The content of the component is written into `content`.
+```javascript
+{id: 0, name: "default-head", content: "<component-content type='html or js'></component-content>"}
+```
+###  kjs.urlParams
+This array contains the Parameters provided by the URL. They are splittet by every `/`.
+E.g. `www.yourApp.com/#/description/another/parameter` will give you the following array:
+```javascript
+kjs.urlParams = [
+	'description',
+    'another',
+    'parameter'
+];
+```
+###  kjs.chacheKeys
+This array saves all identifiers provided to `kjs.get_once()`.
 
 ## Framework Functions
 There are a few functions defined which you can use while scripting your App.
