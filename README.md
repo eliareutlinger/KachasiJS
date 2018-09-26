@@ -117,5 +117,30 @@ kjs.urlParams = [
 This array saves all identifiers provided to `kjs.get_once()`.
 
 ## Framework Functions
-There are a few functions defined which you can use while scripting your App.
-(Work in progress)
+There are a few functions defined which you can use while scripting your App. (Work in Progress)
+
+### kjs.error()
+
+### kjs.set_style()
+
+### kjs.get_url_params()
+
+### kjs.replace_all()
+
+### kjs.set_compdir()
+
+### kjs.exists()
+
+### kjs.install_components()
+
+### kjs.install()
+
+### kjs.get_once()
+
+### kjs.get_view()
+
+### kjs.get_component()
+
+### kjs.get_components()
+
+### kjs.get_file()
