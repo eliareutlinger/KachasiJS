@@ -69,7 +69,7 @@ kjs.set_compdir = function(data, path){
     return kjs.replace_all(data, '#COMPDIR#', path);
 }
 
-kjs.locate_file = function(urls, callback, i) {
+kjs.get_file = function(urls, callback, i) {
     if(!i){var i = 0};
     $.ajax({
           url: urls[i],
@@ -79,11 +79,14 @@ kjs.locate_file = function(urls, callback, i) {
               compdir.pop();
               compdir = compdir.join('/');
               compdir = kjs.set_compdir(data, compdir);
-              callback([urls[i], compdir]);
+              if(urls[i].indexOf('.js', this.length - '.js'.length) !== -1){
+                  compdir = '<script type="text/javascript">' +compdir+ '</script>';
+              }
+              callback(compdir);
           },
           error: function(){
               if(i+1<urls.length){
-                  kjs.locate_file(urls, callback, i+1);
+                  kjs.get_file(urls, callback, i+1);
               } else {
                   kjs.error('e.0001.e', 'Provided URLs not found ('+urls[i]+'...).');
               }
@@ -238,18 +241,6 @@ kjs.get_component = function(component, newPos, set, callback){
         });
     }
 
-}
-
-kjs.get_file = function(checkPaths, callback){
-    kjs.locate_file(checkPaths, function(array) {
-        if(array[0]){
-            if(array[0].indexOf('.js', this.length - '.js'.length) !== -1){
-                callback('<script type="text/javascript">' +array[1]+ '</script>');
-            } else {
-                callback(array[1]);
-            }
-        }
-    });
 }
 
 kjs.urlParams = kjs.get_url_params(window.location.href);
