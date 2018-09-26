@@ -40,7 +40,7 @@ Make sure to have the following files configured correctly, while having them in
 <!DOCTYPE html>
 <html lang="en">
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="https://cdn.rawgit.com/eliareutlinger/KachasiJS/master/Engine/engine.min.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/eliareutlinger/KachasiJS/master/Engine/kachasi.min.js"></script>
 </html>
 ```
 This should be the first file called by a client. It gets all dependencies (JQuery&KachasiJS) from CDNs (default conf).
@@ -57,20 +57,41 @@ var g_navLinks = [
     {title:'Docs', view:'docs'}
 ];
 
-// Individual startup
-if(postParams){
-    e_load_view(postParams[0]);
+// Individual startup --> Here it looks for given url-Params and loads the appropriate view.
+if(kjs.exists(kjs.urlParams)){
+    kjs.get_view(kjs.urlParams[0]);
 } else {
-    e_load_view('main');
+    kjs.get_view('main');
 }
 
 //Stylesheets
-e_set_style('bootstrap');
-
+kjs.set_style('bootstrap'); //Loads Bootstrap 4.0 including it's JS-Scripts from cdn.
+kjs.set_style('fontawesome'); //Loads Fontawsome from CDN
 ```
 Here you can configure the settings and default behaviour of your App when starting. So this will be the first Script called after loading all dependencies from `index.html`.
 
-## Framework Functions
-There are a few functions defined which you can use to speed up your App.
+#### Views
+A View-Script is used to define view-specific variables and the components used in this view. The minimal setup contains the `kjs.get_components()` function, which tells the engine which components have to be used.
+```javascript
+// Global Params
+var v_title = "Main"; //Used in Title and title-tag.
+var v_subtitle = "This is the Subtitle used in the Header and meta-description tag.";
 
-### Example (TODO)
+//Get Components of this View
+kjs.get_components([
+    ['','default-head'],
+    ['bootstrapTemplate','navigation'],
+    ['bootstrapTemplate','header'],
+    ['bootstrapTemplate','title'],
+    ['bootstrapTemplate','footer'],
+]);
+```
+The 
+
+## Framework Variables
+There are a few pre-defined Variables as well as Placeholders to make your development easier.
+(Work in progress)
+
+## Framework Functions
+There are a few functions defined which you can use while scripting your App.
+(Work in progress)
