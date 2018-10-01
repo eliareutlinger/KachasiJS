@@ -192,7 +192,7 @@ kjs.get_components = function(componentList, callback){
 
     for (var i = 0; i < componentList.length; i++){
 
-        kjs.get_component(componentList[i][1], i, componentList[i][0], function(data){
+        kjs.get_component(componentList[i][0], componentList[i][1], function(data){
             if (typeof data !== "undefined") {
                 contents.push(data);
             }
@@ -208,38 +208,40 @@ kjs.get_components = function(componentList, callback){
                 }
             }
             countComponents++;
-        });
+        }, i);
     }
 }
 
-kjs.get_component = function(component, newPos, set, callback){
+kjs.get_component = function(set, component, callback, newPos){
 
-    var found = false;
     var path = component + '/' + component;
     if(kjs.exists(set)){
         path = set + '/' + path;
         component = set + '.' + component;
     }
 
-    if(kjs.exists(kjs.guiObjects)){
+    if(kjs.exists(kjs.guiObjects) && newPos){
         for(var i = 0; i < kjs.guiObjects.length; i++){
             if(kjs.guiObjects[i] !== undefined && kjs.guiObjects[i]['name'] === component){
                 callback({'id':newPos, 'name':kjs.guiObjects[i]['name'], 'content':$('#e_view_'+kjs.guiObjects[i]['id']).html()});
-                return found = true;
+                return undefined;
             }
         };
     };
 
-    if(!found){
-        var checkPaths = [
-            'app/component/'+path+'.html',
-            'app/component/'+path+'.min.js',
-            'app/component/'+path+'.js'
-        ];
-        kjs.get_file(checkPaths, function(data){
+    var checkPaths = [
+        'app/component/'+path+'.html',
+        'app/component/'+path+'.min.js',
+        'app/component/'+path+'.js'
+    ];
+
+    kjs.get_file(checkPaths, function(data){
+        if(typeof newPos !== 'undefined'){
             callback({'id':newPos, 'name':component, 'content':data});
-        });
-    }
+        } else {
+            callback(data);
+        }
+    });
 
 }
 

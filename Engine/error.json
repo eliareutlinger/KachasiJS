@@ -5,7 +5,7 @@
         "code": "e.0001.e",
         "concerns": "Engine",
         "ending": "e",
-        "message": "The Path used to load a View is incorrect or there is no file at this Path.",
+        "message": "The Path used to load a View/Component is incorrect or there is no file at this Path.",
         "function": ""
       },
       {
