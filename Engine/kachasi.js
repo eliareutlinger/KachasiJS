@@ -169,9 +169,9 @@ kjs.get_once = function(keyParam, callback){
 
 kjs.get_view = function(view, callback){
     var checkPaths = [
-        'app/view/'+view+'/'+view+'.min.js',
-        'app/view/'+view+'/'+view+'.html',
-        'app/view/'+view+'/'+view+'.js',
+        'app/view/'+view+'/view.min.js',
+        'app/view/'+view+'/view.js',
+        'app/view/'+view+'/view.html',
     ];
     kjs.get_file(checkPaths, function(data){
         if (typeof callback === 'function') {
@@ -214,7 +214,7 @@ kjs.get_components = function(componentList, callback){
 
 kjs.get_component = function(set, component, callback, newPos){
 
-    var path = component + '/' + component;
+    var path = component;
     if(kjs.exists(set)){
         path = set + '/' + path;
         component = set + '.' + component;
@@ -230,9 +230,9 @@ kjs.get_component = function(set, component, callback, newPos){
     };
 
     var checkPaths = [
-        'app/component/'+path+'.html',
-        'app/component/'+path+'.min.js',
-        'app/component/'+path+'.js'
+        'app/component/'+path+'/component.html',
+        'app/component/'+path+'/component.min.js',
+        'app/component/'+path+'/component.js'
     ];
 
     kjs.get_file(checkPaths, function(data){
