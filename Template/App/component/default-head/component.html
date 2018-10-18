@@ -7,8 +7,16 @@
 </placeholder>
 
 <script type="text/javascript">
+
     kjs.get_once('#COMPDIR#', function(){
+
+        //Everything inside here will only be executed once
+        //(When the component gets loaded the first time)
         $.getScript('#COMPDIR#/js/appendContent.js');
+
     });
+
+    //Everything else will be executed with every use of the component
     $.getScript('#COMPDIR#/js/setTitle.js');
+
 </script>
