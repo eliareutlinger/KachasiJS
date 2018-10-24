@@ -3,8 +3,39 @@
     </div>
 </div>
 <script type="text/javascript">
-    kjs.get_once('#COMPDIR#', function(){});
+
+    var features = [
+        [
+            'Very Easy!',
+            "You can use KachasiJS without much knowledge since it's very easy to use! Here you can find all the Files:",
+            'https://github.com/eliareutlinger/KachasiJS',
+            'Show on Github'
+        ],
+        [
+            'Very Open!',
+            "You don't need to stick to the rules all the time. Just use your own scripts if you want!",
+            'https://github.com/eliareutlinger/KachasiJS/blob/master/README.md',
+            'Readme'
+        ],
+        [
+            'Very Fast!',
+            "Since KachasiJS will only load neccessary files from the server by checking if they don't yet exist in the DOM, it's very fast for the End-User!",
+            'https://neave.com/imagination/',
+            'Impressing!'
+        ],
+    ];
+
     kjs.get_component('features', 'feature-object', function(data){
-        $('#features-container').html(data);
+        for (var i = 0; i < features.length; i++) {
+
+            component = data;
+            component = kjs.replace_all(component,'#FEATURETITLE#', features[i][0]);
+            component = kjs.replace_all(component,'#FEATURETEXT#', features[i][1]);
+            component = kjs.replace_all(component,'#FEATURELINK#', features[i][2]);
+            component = kjs.replace_all(component,'#FEATUREBUTTON#', features[i][3]);
+            $('#features-container').append(component);
+
+        }
     });
+
 </script>

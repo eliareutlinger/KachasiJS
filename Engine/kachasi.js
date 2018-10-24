@@ -8,11 +8,55 @@ function kjs() {
 }
 
 $(window).on('popstate',function() {
-    if(window.history.state !== null && window.history.state["info"] !== './.'){
-        var href = window.history.state["info"];
+    if(window.history.state !== null && window.history.state["current_view"] !== './.'){
+        var href = window.history.state["current_view"];
         kjs.get_view(href);
     }
 });
+
+kjs.push_url = function(type, data){
+    if(type == 'view'){
+
+        var tmpAttr = [];
+        var tmpUrl = data + '/';
+
+        if(window.history.state == null || window.history.state['current_view'] == null){
+
+            if(kjs.urlParams && kjs.urlParams[1]){
+                for(var i=1; i<kjs.urlParams.length; i++){
+                    tmpAttr.push(kjs.urlParams[i]);
+                    tmpUrl += kjs.urlParams[i] + '/';
+                }
+            }
+            window.history.replaceState({current_view: data, attributes: tmpAttr}, data, "#/"+tmpUrl);
+
+        } else if(window.history.state['current_view'] != data){
+            window.history.pushState({current_view: data, attributes: null}, data, "#/"+tmpUrl);
+        }
+
+        kjs.urlParams = kjs.get_url_params(window.location.href);
+
+    } else if(type == 'attribute'){
+
+        var tmpAttr = '';
+        if(typeof data.isArray === 'undefined'){
+            for(var i=0; i<data.length; i++){
+                tmpAttr += data[i] + '/';
+            }
+        } else {
+            tmpAttr = data + '/';
+        }
+
+        var view = window.history.state['current_view'];
+        var tmpUrl = view +'/'+ tmpAttr;
+
+        //TODO
+        if(window.history.state['attributes'] != tmpAttr){
+            window.history.pushState({current_view: view, attributes: tmpAttr}, view, "#/"+tmpUrl);
+        }
+
+    }
+}
 
 kjs.error = function(code, additional){
     $('body').append('<div id="e_view_error" style="text-align:center; background-color:#dc3545; padding:20px; color: white;">Error "'+code+'" occured: '+additional+'</div>');
@@ -50,16 +94,27 @@ kjs.get_url_params = function(paramString) {
         var paramList = paramString.split("/");
         var paramArray = [];
         for (var i = 0; i < paramList.length; i++) {
-            paramArray.push(paramList[i])
+            if(paramList[i].length > 0){
+                paramArray.push(paramList[i]);
+            }
         }
         return paramArray;
     }
-    window.history.pushState({info: './.'}, '../.', './.');
     return undefined;
 }
 
 kjs.replace_all = function(str, find, replace) {
-    return str.replace(new RegExp(find, 'g'), replace);
+    var wasObject = false;
+    if(typeof str === 'object'){
+        str = str.prop('outerHTML');
+        wasObject = true;
+    }
+    str = str.replace(new RegExp(find, 'g'), replace);
+    if(wasObject){
+        return $(str);
+    } else {
+        return str;
+    }
 }
 
 kjs.set_compdir = function(data, path){
@@ -135,15 +190,11 @@ kjs.install_components = function(newGuiObjects){
 }
 
 kjs.install = function(type, dataArray){
-
     if(type == 'view'){
         var href = dataArray['name'];
+        kjs.push_url('view', href);
         $('body').append(dataArray['content']);
-        if(!kjs.exists(window.history.state['info']) || window.history.state['info'] != href){
-            window.history.pushState({info: href}, href, "#/"+href);
-        }
     } else if(type == 'components'){
-
         var newGuiObjects = dataArray.sort(function(a, b){
             a = a['id'];
             b = b['id'];
@@ -151,9 +202,7 @@ kjs.install = function(type, dataArray){
             if(a > b){return 1};
             return 0;
         });
-
         kjs.install_components(newGuiObjects);
-
     }
 }
 

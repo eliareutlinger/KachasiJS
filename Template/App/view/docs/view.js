@@ -5,5 +5,6 @@ kjs.get_components([
     ['','default-head'],
     ['bootstrapTemplate','navigation'],
     ['bootstrapTemplate','title'],
+    ['','documentation'],
     ['bootstrapTemplate','footer'],
 ]);
