@@ -1,3 +1,4 @@
+/*! KachasiJS v0.1.0 (Alpha) | https://github.com/eliareutlinger/KachasiJS | */
 /* global: kjs.urlParams **/
 /* global: kjs.guiObjects **/
 /* global: kjs.cacheKeys **/
@@ -82,6 +83,9 @@ kjs.set_style = function(url){
             href: 'https://use.fontawesome.com/releases/v5.3.1/css/all.css'
         };
     } else {
+        if(!url.endsWith('.min.css') && url.endsWith('.css')){
+            url = url.replace('.css', '.min.css');
+        }
         params = {
             rel: 'stylesheet',
             href: url
