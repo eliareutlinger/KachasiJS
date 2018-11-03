@@ -1,4 +1,4 @@
-/*! KachasiJS v0.1.0.1 (Alpha) | https://github.com/eliareutlinger/KachasiJS | */
+/*! KachasiJS v0.1.0.2 (Alpha) | https://github.com/eliareutlinger/KachasiJS | */
 /* global: kjs.urlParams **/
 /* global: kjs.viewCompCache **/
 /* global: kjs.cacheKeys **/
@@ -71,7 +71,7 @@ kjs.use_script = function(url, dontUseMinified){
         url = url.replace('.js', '.min.js');
     }
     $.getScript({url:url,cache:true}).fail(function(){
-        $.getScript(url.replace('.min.js', '.js'));
+        $.getScript({url:url.replace('.min.js', '.js'),cache:true});
     });
 }
 
