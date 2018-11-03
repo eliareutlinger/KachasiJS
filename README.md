@@ -65,8 +65,8 @@ if(kjs.exists(kjs.urlParams)){
 }
 
 //Stylesheets
-kjs.set_style('bootstrap'); //Loads Bootstrap 4.0 including it's JS-Scripts from cdn.
-kjs.set_style('fontawesome'); //Loads Fontawsome from CDN
+kjs.use_style('bootstrap'); //Loads Bootstrap 4.0 including it's JS-Scripts from cdn.
+kjs.use_style('fontawesome'); //Loads Fontawsome from CDN
 ```
 Here you can configure the settings and default behavior of your App when starting. So this will be the first Script called after loading all dependencies from `index.html`.
 
@@ -94,9 +94,9 @@ There are a few pre-defined global Variables as well as Placeholders to make you
 This Placeholder can be used in components and views of every type (html, css & js) to get the current directory path. As well as a path it could be used as a unique identifier for every component and view.
 ```javascript
 kjs.get_once('#COMPDIR#', function(){ //Used as identifier in get_once()
-	$.getScript('#COMPDIR#/js/generate.js'); //Used as Path
+	kjs.use_script('#COMPDIR#/js/generate.js'); //Used as Path
 });
-$.getScript('#COMPDIR#/js/animations.min.js'); //Used as Path
+kjs.use_script('#COMPDIR#/js/animations.js'); //Used as Path
 ```
 ###  kjs.guiObjects
 This Array contains the currently used components. They are saved as Objects and used when loading a new view. `id` defines the position of the component. `name` contains the components name. If it's loaded from a set, it will be something like `set.component`. The content of the component is written into `content`.
@@ -121,7 +121,7 @@ There are a few functions defined which you can use while scripting your App. (W
 
 ### kjs.error()
 
-### kjs.set_style()
+### kjs.use_style()
 
 ### kjs.get_url_params()
 

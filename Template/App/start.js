@@ -29,6 +29,6 @@ if(kjs.exists(kjs.urlParams)){
 }
 
 // Load Pre-Defined Stylesheets (from CDN)
-kjs.set_style('bootstrap');
-kjs.set_style('fontawesome');
+kjs.use_style('bootstrap');
+kjs.use_style('fontawesome');
 // (To load a foreign Style just use it's Path).

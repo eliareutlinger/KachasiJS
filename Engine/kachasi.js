@@ -1,4 +1,4 @@
-/*! KachasiJS v0.1.0 (Alpha) | https://github.com/eliareutlinger/KachasiJS | */
+/*! KachasiJS v0.1.0.1 (Alpha) | https://github.com/eliareutlinger/KachasiJS | */
 /* global: kjs.urlParams **/
 /* global: kjs.guiObjects **/
 /* global: kjs.cacheKeys **/
@@ -65,7 +65,16 @@ kjs.error = function(code, additional){
     $('body').append('<div id="e_view_error" style="text-align:center; background-color:#dc3545; padding:20px; color: white;">Error "'+code+'" occured: '+additional+'</div>');
 }
 
-kjs.set_style = function(url){
+kjs.use_script = function(url, dontUseMinified){
+    if(!url.endsWith('.min.js') && !dontUseMinified){
+        url = url.replace('.js', '.min.js');
+    }
+    $.getScript(url).fail(function(){
+        $.getScript(url.replace('.min.js', '.js'));
+    });
+}
+
+kjs.use_style = function(url, dontUseMinified){
     var params;
     if(url == 'bootstrap'){
         params = {
@@ -74,7 +83,7 @@ kjs.set_style = function(url){
             crossorigin: 'anonymous',
             href: 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css'
         };
-        $.getScript('https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js');
+        kjs.use_script('https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js');
     } else if (url == 'fontawesome'){
         params = {
             rel: 'stylesheet',
@@ -83,7 +92,7 @@ kjs.set_style = function(url){
             href: 'https://use.fontawesome.com/releases/v5.3.1/css/all.css'
         };
     } else {
-        if(!url.endsWith('.min.css') && url.endsWith('.css')){
+        if(!url.endsWith('.min.css') && !dontUseMinified){
             url = url.replace('.css', '.min.css');
         }
         params = {
@@ -306,8 +315,4 @@ kjs.get_component = function(set, component, callback, newPos){
 }
 
 kjs.urlParams = kjs.get_url_params(window.location.href);
-$.getScript('app/start.min.js').fail(function(){
-    $.getScript('app/start.js').fail(function(){
-        kjs.error('e.0002.e', arguments[2].toString());
-    });
-});
+kjs.use_script('app/start.js');

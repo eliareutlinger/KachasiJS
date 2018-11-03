@@ -15,7 +15,7 @@
 </nav>
 <script type="text/javascript">
     kjs.get_once('#COMPDIR#', function(){
-        $.getScript('#COMPDIR#/js/generate.js');
+        kjs.use_script('#COMPDIR#/js/generate.js');
     });
-    $.getScript('#COMPDIR#/js/animations.min.js');
+    kjs.use_script('#COMPDIR#/js/animations.js');
 </script>
