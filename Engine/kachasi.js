@@ -1,12 +1,13 @@
 /*! KachasiJS v0.1.0.1 (Alpha) | https://github.com/eliareutlinger/KachasiJS | */
 /* global: kjs.urlParams **/
-/* global: kjs.guiObjects **/
+/* global: kjs.viewCompCache **/
 /* global: kjs.cacheKeys **/
+/* global: kjs.pendingCalls **/
 function kjs(){
 
 }
 
-kjs.guiObjects = [];
+kjs.viewCompCache = [];
 kjs.urlParams = [];
 kjs.cacheKeys = [];
 kjs.pendingCalls = [];
@@ -26,7 +27,7 @@ kjs.push_url = function(type, data){
 
         if(window.history.state == null || window.history.state['current_view'] == null){
 
-            if(kjs.urlParams && kjs.urlParams[1]){
+            if(kjs.urlParams[1]){
                 for(var i=1; i<kjs.urlParams.length; i++){
                     tmpAttr.push(kjs.urlParams[i]);
                     tmpUrl += kjs.urlParams[i] + '/';
@@ -69,7 +70,7 @@ kjs.use_script = function(url, dontUseMinified){
     if(!url.endsWith('.min.js') && !dontUseMinified){
         url = url.replace('.js', '.min.js');
     }
-    $.getScript(url).fail(function(){
+    $.getScript({url:url,cache:true}).fail(function(){
         $.getScript(url.replace('.min.js', '.js'));
     });
 }
@@ -179,30 +180,25 @@ kjs.exists = function(object){
 kjs.install_components = function(newGuiObjects){
 
     var componentDivs = 0;
-    if(kjs.exists(kjs.guiObjects)){
-        if(newGuiObjects.length > kjs.guiObjects.length){
-            componentDivs = newGuiObjects.length;
-        } else if(newGuiObjects.length < kjs.guiObjects.length){
-            componentDivs = kjs.guiObjects.length;
-        } else {
-            componentDivs = kjs.guiObjects.length;
-        }
-    } else {
-        kjs.guiObjects = [];
+    if(newGuiObjects.length > kjs.viewCompCache.length){
         componentDivs = newGuiObjects.length;
+    } else if(newGuiObjects.length < kjs.viewCompCache.length){
+        componentDivs = kjs.viewCompCache.length;
+    } else {
+        componentDivs = kjs.viewCompCache.length;
     }
 
     for(var i = 0;i<componentDivs;i++){
         if(i<newGuiObjects.length){
-            if(kjs.guiObjects[i] !== undefined){
-                kjs.guiObjects[i] = newGuiObjects[i];
+            if(kjs.viewCompCache[i] !== undefined){
+                kjs.viewCompCache[i] = newGuiObjects[i];
                 $('#e_view_'+newGuiObjects[i]['id']).attr('component',newGuiObjects[i]['name']).html(newGuiObjects[i]['content']);
             } else {
-                kjs.guiObjects[i] = (newGuiObjects[i]);
+                kjs.viewCompCache[i] = (newGuiObjects[i]);
                 $('body').append('<div id="e_view_'+newGuiObjects[i]['id']+'" component="'+newGuiObjects[i]['name']+'">'+newGuiObjects[i]['content']+'</div>');
             }
         } else if(i>=newGuiObjects.length){
-            kjs.guiObjects[i] = undefined;
+            kjs.viewCompCache[i] = undefined;
             $('#e_view_'+i).remove();
         }
     }
@@ -227,9 +223,6 @@ kjs.install = function(type, dataArray){
 }
 
 kjs.get_once = function(keyParam, callback){
-    if(!kjs.exists(kjs.cacheKeys)){
-        kjs.cacheKeys = [];
-    }
     if(kjs.cacheKeys.indexOf(keyParam, this.length - keyParam.length) == -1){
         kjs.cacheKeys.push(keyParam);
         callback();
@@ -289,10 +282,10 @@ kjs.get_component = function(set, component, callback, newPos){
         component = set + '.' + component;
     }
 
-    if(kjs.exists(kjs.guiObjects) && newPos){
-        for(var i = 0; i < kjs.guiObjects.length; i++){
-            if(kjs.guiObjects[i] !== undefined && kjs.guiObjects[i]['name'] === component){
-                callback({'id':newPos, 'name':kjs.guiObjects[i]['name'], 'content':$('#e_view_'+kjs.guiObjects[i]['id']).html()});
+    if(newPos){
+        for(var i = 0; i < kjs.viewCompCache.length; i++){
+            if(kjs.viewCompCache[i] !== undefined && kjs.viewCompCache[i]['name'] === component){
+                callback({'id':newPos, 'name':kjs.viewCompCache[i]['name'], 'content':$('#e_view_'+kjs.viewCompCache[i]['id']).html()});
                 return undefined;
             }
         };
