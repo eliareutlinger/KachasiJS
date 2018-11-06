@@ -18,18 +18,19 @@ KachasiJS is based on file paths so you'll have to keep the following structure.
 index.html
 App/
 ├── start.min.js
-├── component/
+├── components/
 │   └── exampleComponent/
-│       ├── exampleComponent.html
+│       ├── comp.html
 │       ├── js/
 │       │   ├── functions.js
-│       │   └── execute.js
+│       │   └── functions.min.js
 │       └── css/
-│           └── style.css
-└── view/
+│           ├── style.js
+│           └── style.min.css
+└── views/
     └── exampleView/
-        ├── exampleView.js
-        └── exampleView.min.js
+        ├── view.js
+        └── view.min.js
 ```
 
 ## Important Files

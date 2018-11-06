@@ -3,6 +3,10 @@
 // something will be displayed as well as what it should display in the beginning
 // and so on). This is how you COULD design this File:
 
+// This Var can be used to update the clients cache if there are changes. If you
+// edit this number, all scripts will be reloaded & cached at the client.
+kjs.appVers = 1.1;
+
 // Global fixed Params to be used in other scripts
 const g_appName = 'KachasiJS';
 const g_appCreator = 'Elia Reutlinger';
@@ -16,7 +20,7 @@ var g_navLinks = [
 ];
 
 // Loading the View
-if(kjs.exists(kjs.urlParams)){
+if(typeof kjs.urlParams !== 'undefined' && kjs.urlParams[0]){
 
     //If there's something submitted in the URL it will use it
     kjs.get_view(kjs.urlParams[0]);

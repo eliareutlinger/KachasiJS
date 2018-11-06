@@ -1,16 +1,18 @@
-/*! KachasiJS v0.1.0.2 (Alpha) | https://github.com/eliareutlinger/KachasiJS | */
+/*! KachasiJS v0.1.0.3 (Alpha) | https://github.com/eliareutlinger/KachasiJS | */
 /* global: kjs.urlParams **/
-/* global: kjs.viewCompCache **/
+/* global: kjs.compCache **/
 /* global: kjs.cacheKeys **/
 /* global: kjs.pendingCalls **/
+/* global: kjs.appVers **/
 function kjs(){
 
 }
 
-kjs.viewCompCache = [];
+kjs.compCache = [];
 kjs.urlParams = [];
 kjs.cacheKeys = [];
 kjs.pendingCalls = [];
+kjs.appVers = undefined;
 
 $(window).on('popstate',function() {
     if(window.history.state !== null && window.history.state["current_view"] !== './.'){
@@ -27,12 +29,13 @@ kjs.push_url = function(type, data){
 
         if(window.history.state == null || window.history.state['current_view'] == null){
 
-            if(kjs.urlParams[1]){
+            if(kjs.urlParams){
                 for(var i=1; i<kjs.urlParams.length; i++){
                     tmpAttr.push(kjs.urlParams[i]);
                     tmpUrl += kjs.urlParams[i] + '/';
                 }
             }
+
             window.history.replaceState({current_view: data, attributes: tmpAttr}, data, "#/"+tmpUrl);
 
         } else if(window.history.state['current_view'] != data){
@@ -66,13 +69,22 @@ kjs.error = function(code, additional){
     $('body').append('<div id="e_view_error" style="text-align:center; background-color:#dc3545; padding:20px; color: white;">Error "'+code+'" occured: '+additional+'</div>');
 }
 
-kjs.use_script = function(url, dontUseMinified){
+kjs.use_script = function(url, dontUseMinified, useCache){
+
+    useCache = (typeof useCache !== 'undefined') ?  useCache : true;
+
     if(!url.endsWith('.min.js') && !dontUseMinified){
         url = url.replace('.js', '.min.js');
     }
-    $.getScript({url:url,cache:true}).fail(function(){
-        $.getScript({url:url.replace('.min.js', '.js'),cache:true});
+
+    if(typeof kjs.appVers !== 'undefined'){
+        url += '?kjsCvers'+kjs.appVers;
+    }
+
+    $.getScript({url:url,cache:useCache}).fail(function(){
+        $.getScript({url:url.replace('.min.js', '.js'),cache:useCache});
     });
+
 }
 
 kjs.use_style = function(url, dontUseMinified){
@@ -95,6 +107,9 @@ kjs.use_style = function(url, dontUseMinified){
     } else {
         if(!url.endsWith('.min.css') && !dontUseMinified){
             url = url.replace('.css', '.min.css');
+        }
+        if(typeof kjs.appVers !== 'undefined'){
+            url += '?kjsCvers'+kjs.appVers;
         }
         params = {
             rel: 'stylesheet',
@@ -143,16 +158,22 @@ kjs.set_compdir = function(data, path){
 kjs.get_file = function(urls, callback, i){
     if(!i){var i = 0};
     if(kjs.pendingCalls.indexOf(urls[i]) < 0){
+
+        var url = urls[i];
+        if(typeof kjs.appVers !== 'undefined'){
+            url += '?kjsCvers'+kjs.appVers;
+        }
+
         kjs.pendingCalls.push(urls[i]);
         $.ajax({
-            url: urls[i],
+            url: url,
             converters: {'text script': function (text) {return text;}},
             success: function(data){
-                var compdir = (urls[i].split('/'));
+                var compdir = (url.split('/'));
                 compdir.pop();
                 compdir = compdir.join('/');
                 compdir = kjs.set_compdir(data, compdir);
-                if(urls[i].indexOf('.js', this.length - '.js'.length) !== -1){
+                if(url.indexOf('.js', this.length - '.js'.length) !== -1){
                     compdir = '<script type="text/javascript">' +compdir+ '</script>';
                 }
                 callback(compdir);
@@ -170,35 +191,28 @@ kjs.get_file = function(urls, callback, i){
     }
 }
 
-kjs.exists = function(object){
-    if(typeof object !== 'undefined' && object !== null && object.length > 0){
-        return true;
-    }
-    return false;
-}
-
 kjs.install_components = function(newGuiObjects){
 
     var componentDivs = 0;
-    if(newGuiObjects.length > kjs.viewCompCache.length){
+    if(newGuiObjects.length > kjs.compCache.length){
         componentDivs = newGuiObjects.length;
-    } else if(newGuiObjects.length < kjs.viewCompCache.length){
-        componentDivs = kjs.viewCompCache.length;
+    } else if(newGuiObjects.length < kjs.compCache.length){
+        componentDivs = kjs.compCache.length;
     } else {
-        componentDivs = kjs.viewCompCache.length;
+        componentDivs = kjs.compCache.length;
     }
 
     for(var i = 0;i<componentDivs;i++){
         if(i<newGuiObjects.length){
-            if(kjs.viewCompCache[i] !== undefined){
-                kjs.viewCompCache[i] = newGuiObjects[i];
+            if(kjs.compCache[i] !== undefined){
+                kjs.compCache[i] = newGuiObjects[i];
                 $('#e_view_'+newGuiObjects[i]['id']).attr('component',newGuiObjects[i]['name']).html(newGuiObjects[i]['content']);
             } else {
-                kjs.viewCompCache[i] = (newGuiObjects[i]);
+                kjs.compCache[i] = (newGuiObjects[i]);
                 $('body').append('<div id="e_view_'+newGuiObjects[i]['id']+'" component="'+newGuiObjects[i]['name']+'">'+newGuiObjects[i]['content']+'</div>');
             }
         } else if(i>=newGuiObjects.length){
-            kjs.viewCompCache[i] = undefined;
+            kjs.compCache[i] = undefined;
             $('#e_view_'+i).remove();
         }
     }
@@ -231,9 +245,9 @@ kjs.get_once = function(keyParam, callback){
 
 kjs.get_view = function(view, callback){
     var checkPaths = [
-        'app/view/'+view+'/view.min.js',
-        'app/view/'+view+'/view.js',
-        'app/view/'+view+'/view.html',
+        'app/views/'+view+'/view.min.js',
+        'app/views/'+view+'/view.js',
+        'app/views/'+view+'/view.html',
     ];
     kjs.get_file(checkPaths, function(data){
         if (typeof callback === 'function') {
@@ -277,24 +291,24 @@ kjs.get_components = function(componentList, callback){
 kjs.get_component = function(set, component, callback, newPos){
 
     var path = component;
-    if(kjs.exists(set)){
+    if(typeof set !== 'undefined' && set){
         path = set + '/' + path;
         component = set + '.' + component;
     }
 
     if(newPos){
-        for(var i = 0; i < kjs.viewCompCache.length; i++){
-            if(kjs.viewCompCache[i] !== undefined && kjs.viewCompCache[i]['name'] === component){
-                callback({'id':newPos, 'name':kjs.viewCompCache[i]['name'], 'content':$('#e_view_'+kjs.viewCompCache[i]['id']).html()});
+        for(var i = 0; i < kjs.compCache.length; i++){
+            if(kjs.compCache[i] !== undefined && kjs.compCache[i]['name'] === component){
+                callback({'id':newPos, 'name':kjs.compCache[i]['name'], 'content':$('#e_view_'+kjs.compCache[i]['id']).html()});
                 return undefined;
             }
         };
     };
 
     var checkPaths = [
-        'app/component/'+path+'/component.html',
-        'app/component/'+path+'/component.min.js',
-        'app/component/'+path+'/component.js'
+        'app/components/'+path+'/comp.html',
+        'app/components/'+path+'/comp.min.js',
+        'app/components/'+path+'/comp.js'
     ];
 
     kjs.get_file(checkPaths, function(data){
@@ -308,4 +322,4 @@ kjs.get_component = function(set, component, callback, newPos){
 }
 
 kjs.urlParams = kjs.get_url_params(window.location.href);
-kjs.use_script('app/start.js');
+kjs.use_script('app/start.js', false, false);
